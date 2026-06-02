@@ -1,0 +1,1 @@
+dc97ca1255751669a0d2e323ce6e7e1e93051bfe7bddec5089f5cf0f5fae36c0  releases/v1.0.0/notiva-v1.0.0.apk
