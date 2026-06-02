@@ -18,4 +18,4 @@ Download the latest APK from the Releases section.
 
 ## Website
 
-https://notiva.app
+https://notiva-ai-app.onrender.com/
