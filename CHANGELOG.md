@@ -4,6 +4,49 @@ All notable changes to Notiva will be documented in this file.
 
 The format is based on Keep a Changelog and follows Semantic Versioning.
 
+# [1.0.1] - 2026-06-04
+
+## Fixed
+
+### Authentication
+- Email verification flow no longer fails with `refresh_token required` when Supabase returns no refresh token after signup; app re-signs in with signup password when needed and only calls refresh when a refresh token exists.
+- Empty auth tokens are no longer stored in the session.
+- **Activate account** on login shows the correct message for already-verified emails (“This email is already verified. Please sign in.”) instead of the duplicate-account message.
+- Auth error mapping checks `email_already_confirmed` before broad “already exists” patterns (client and backend).
+
+### Password reset
+- Forgot password uses the Go backend API only (no Supabase SDK/env in the Flutter app).
+- Deep link recovery at opens the reset-password screen (cold start and warm link handling).
+- Android intent filters updated for auth deep links.
+
+### Notifications (Android release builds)
+- Fixed release APK notification delivery (notification icon, manifest permissions).
+- Clear separation between OS notification permission and in-app notification opt-in; “Skip for now” on onboarding no longer implies opt-in.
+- Startup no longer auto-prompts for notification permission; settings reconcile on main navigation.
+
+### UI / UX
+- Dark mode: Add Transaction type toggle uses theme-aware colors (no hardcoded black).
+- Forms no longer auto-open the keyboard on open (login, signup, forgot password, search, add task/transaction); tap outside to dismiss keyboard on major form screens.
+- Dropdown menus on add task/transaction do not steal focus on tap.
+
+## Added
+
+### Authentication
+- **Activate account** on login page: resend verification email and navigate to email verification screen.
+- Backend `POST /v1/auth/resend-verification` with `404` when email not found and `409 email_already_confirmed` when already verified.
+
+### Onboarding / navigation
+- Onboarding and Welcome **Get Started** → Sign up; onboarding **Skip** → Log in.
+- Initial setup: enabling notifications only after a real permission grant; skip does not opt in.
+
+## Changed
+
+- Signup passes password to the email verification page for post-verify sign-in fallback.
+
+## Developer / ops notes
+
+- Rebuild release APK/AAB after this version bump.
+
 ---
 
 # [1.0.0] - 2026-06-02
