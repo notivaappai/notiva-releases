@@ -1,71 +1,146 @@
 # Changelog
 
-All notable changes to Notiva will be documented in this file.
+All notable changes to **Notiva** are documented in this file.
 
-The format is based on Keep a Changelog and follows Semantic Versioning.
+The format is based on **Keep a Changelog**, and this project adheres to **Semantic Versioning (SemVer)**.
+
+---
 
 # [1.0.1] - 2026-06-04
 
-## Fixed
+## Summary
 
-### Authentication
-- Email verification flow no longer fails with `refresh_token required` when Supabase returns no refresh token after signup; app re-signs in with signup password when needed and only calls refresh when a refresh token exists.
-- Empty auth tokens are no longer stored in the session.
-- **Activate account** on login shows the correct message for already-verified emails (“This email is already verified. Please sign in.”) instead of the duplicate-account message.
-- Auth error mapping checks `email_already_confirmed` before broad “already exists” patterns (client and backend).
+Maintenance release focused on authentication reliability, password recovery, notification behavior, and user experience improvements.
 
-### Password reset
-- Forgot password uses the Go backend API only (no Supabase SDK/env in the Flutter app).
-- Deep link recovery at opens the reset-password screen (cold start and warm link handling).
-- Android intent filters updated for auth deep links.
+## Highlights
 
-### Notifications (Android release builds)
-- Fixed release APK notification delivery (notification icon, manifest permissions).
-- Clear separation between OS notification permission and in-app notification opt-in; “Skip for now” on onboarding no longer implies opt-in.
-- Startup no longer auto-prompts for notification permission; settings reconcile on main navigation.
-
-### UI / UX
-- Dark mode: Add Transaction type toggle uses theme-aware colors (no hardcoded black).
-- Forms no longer auto-open the keyboard on open (login, signup, forgot password, search, add task/transaction); tap outside to dismiss keyboard on major form screens.
-- Dropdown menus on add task/transaction do not steal focus on tap.
+* Improved email verification and login reliability.
+* Added **Activate Account** flow with verification email resend support.
+* Fixed notification behavior in Android release builds.
+* Enhanced form usability and onboarding experience.
 
 ## Added
 
 ### Authentication
-- **Activate account** on login page: resend verification email and navigate to email verification screen.
-- Backend `POST /v1/auth/resend-verification` with `404` when email not found and `409 email_already_confirmed` when already verified.
 
-### Onboarding / navigation
-- Onboarding and Welcome **Get Started** → Sign up; onboarding **Skip** → Log in.
-- Initial setup: enabling notifications only after a real permission grant; skip does not opt in.
+* Added **Activate Account** option on the Login screen.
+* Users can resend verification emails directly from the app.
+* Added backend endpoint:
+
+```http
+POST /v1/auth/resend-verification
+```
+
+Response codes:
+
+* `404` — Email not found.
+* `409 email_already_confirmed` — Email already verified.
+
+### Onboarding
+
+* **Get Started** now navigates to **Sign Up**.
+* **Skip** now navigates to **Log In**.
+* Notification opt-in is enabled only after the user grants OS notification permission.
 
 ## Changed
 
-- Signup passes password to the email verification page for post-verify sign-in fallback.
+### Authentication
 
-## Developer / ops notes
+* Signup now passes the user's password to the Email Verification screen, allowing automatic sign-in after successful verification when required.
 
-- Rebuild release APK/AAB after this version bump.
+## Improved
+
+### User Experience
+
+* Better onboarding flow.
+* Improved keyboard behavior across forms.
+* Improved dark mode appearance.
+* Improved notification permission experience.
+
+## Fixed
+
+### Authentication
+
+* Fixed email verification failing with `refresh_token required` when Supabase returned no refresh token after signup.
+* Automatically signs users back in using their signup password when a refresh token is unavailable.
+* Prevented empty authentication tokens from being stored.
+* **Activate Account** now correctly shows:
+
+  * "This email is already verified. Please sign in." for verified users.
+  * Duplicate account errors only when appropriate.
+* Improved authentication error mapping by checking `email_already_confirmed` before broader duplicate-account patterns.
+
+### Password Recovery
+
+* Forgot Password now uses the Go backend API exclusively.
+* Recovery deep links correctly open the Reset Password screen during both cold and warm application launches.
+* Updated Android intent filters for authentication deep links.
+
+### Notifications
+
+* Fixed notification delivery in Android release builds.
+* Fixed notification icon configuration.
+* Added required Android manifest permissions.
+* Separated OS notification permission from in-app notification preferences.
+* Choosing **Skip for now** during onboarding no longer enables notifications.
+* Notification permission is no longer requested automatically during startup.
+* Notification preferences are now synchronized after entering the main application.
+
+### User Interface
+
+* Fixed dark mode colors for the Add Transaction type selector.
+* Prevented the keyboard from opening automatically on:
+
+  * Login
+  * Sign Up
+  * Forgot Password
+  * Search
+  * Add Task
+  * Add Transaction
+* Added tap-outside-to-dismiss keyboard support across major forms.
+* Prevented dropdown menus from stealing input focus.
+
+## Security
+
+* Prevented invalid or empty authentication tokens from being persisted in user sessions.
+
+## Performance
+
+* Reduced unnecessary startup work by delaying notification permission requests until appropriate.
+* Improved authentication recovery flow by avoiding unnecessary token refresh attempts.
+
+## Developer
+
+### Internal Changes
+
+* Rebuild release APK/AAB after upgrading to this version.
 
 ---
 
 # [1.0.0] - 2026-06-02
 
-## Initial Public Release
+## Summary
 
-First public release of Notiva.
+Initial public release of **Notiva**, an offline-first productivity and expense tracking application with secure Notion backup and background synchronization.
 
-Notiva is an offline-first productivity and expense tracking application designed for ultra-fast data capture and secure Notion backup.
+## Highlights
 
----
+* Universal Quick Capture
+* Offline-first architecture
+* Task management
+* Expense tracking
+* Budget tracking
+* Reminder notifications
+* Secure Notion integration
+* Background synchronization
 
 ## Added
 
 ### Universal Quick Capture
 
-Introduced natural language quick capture system.
+Create items using natural language.
 
-Users can instantly create:
+Supports:
 
 * Tasks
 * Reminders
@@ -79,27 +154,15 @@ Examples:
 * Pay electricity bill tomorrow
 * Buy groceries
 
----
-
 ### Task Management
 
-Implemented task management system.
-
-Features:
-
 * Create tasks
-* Update tasks
+* Edit tasks
 * Complete tasks
 * Delete tasks
-* Task status tracking
-
----
+* Track task status
 
 ### Expense Tracking
-
-Implemented transaction management.
-
-Features:
 
 * Income tracking
 * Expense tracking
@@ -107,17 +170,13 @@ Features:
 * Payment methods
 * Transaction history
 
----
-
 ### Smart Parsing Engine
 
-Added rule-based NLP parser.
-
-Capabilities:
+Rule-based natural language parser supporting:
 
 * Intent detection
 * Amount extraction
-* Date extraction
+* Date parsing
 * Category detection
 
 Supported intents:
@@ -127,222 +186,119 @@ Supported intents:
 * Expense
 * Note
 
----
+### Offline-First Architecture
 
-### Offline First Architecture
-
-Implemented local-first capture flow.
-
-Features:
-
-* Local storage persistence
-* Offline capture support
-* Sync queue
-* Automatic retry
-
-Users can continue using Notiva without internet connectivity.
-
----
+* Local storage persistence.
+* Offline data capture.
+* Sync queue.
+* Automatic retry.
 
 ### Local Capture Outbox
 
-Added offline capture queue.
-
-Features:
-
-* Pending capture storage
-* Automatic flush
-* Background synchronization
-
----
+* Pending capture storage.
+* Automatic queue processing.
+* Background synchronization.
 
 ### Budget Tracking
 
-Implemented monthly budgeting system.
-
-Features:
-
-* Global monthly budget
-* Budget consumption tracking
-* Budget progress visualization
-
----
+* Monthly budget management.
+* Budget consumption tracking.
+* Budget progress visualization.
 
 ### Budget Alerts
 
-Added over-budget detection.
-
-Features:
-
-* Monthly budget monitoring
-* Threshold alerts
-* Over-budget notifications
-
----
+* Monthly spending monitoring.
+* Threshold alerts.
+* Over-budget notifications.
 
 ### Notifications
 
-Implemented notification infrastructure.
-
-Features:
-
-* Reminder notifications
-* Scheduled alerts
-* Local notifications
-
----
+* Reminder notifications.
+* Scheduled alerts.
+* Local notifications.
 
 ### Priority Alert System
 
-Added priority-based notification behavior.
-
-Features:
-
-* Priority levels
-* Custom vibration patterns
-* Alert differentiation
-
----
+* Priority-based reminders.
+* Custom vibration patterns.
+* Alert differentiation.
 
 ### Reminder Management
 
-Implemented reminder workflow.
-
-Features:
-
-* Due dates
-* Scheduled reminders
-* Notification integration
-
----
+* Due dates.
+* Scheduled reminders.
+* Notification integration.
 
 ### Dashboard
 
-Implemented productivity dashboard.
-
-Features:
-
-* Task overview
-* Expense overview
-* Budget visibility
-* Quick actions
-
----
+* Task overview.
+* Expense overview.
+* Budget visibility.
+* Quick actions.
 
 ### Transaction Filtering
 
-Added transaction filtering capabilities.
-
-Features:
-
-* Date range selection
-* Current month filtering
-* Historical browsing
-
----
+* Date range filtering.
+* Current month filtering.
+* Historical browsing.
 
 ### Floating Action Button
 
-Added global quick access entry point.
-
-Features:
-
-* Accessible from all tabs
-* Launches Universal Quick Capture
-* Instant data entry
-
----
+* Available across all tabs.
+* Launches Universal Quick Capture.
+* Fast data entry.
 
 ### Notion Integration
 
-Implemented secure Notion OAuth integration.
+* Secure OAuth authentication.
+* Connect personal Notion workspace.
+* Backend-managed integration.
+* Secure token storage.
 
-Features:
+### Notion Backup
 
-* Connect personal Notion workspace
-* OAuth authentication
-* Secure token storage
-* Backend-managed integration
+* One-way backup of:
 
----
-
-### Notion Backup System
-
-Implemented one-way backup to Notion.
-
-Features:
-
-* Tasks backup
-* Transactions backup
-* Automatic database creation
-* Template provisioning
-
----
+  * Tasks
+  * Transactions
+* Automatic database creation.
+* Template provisioning.
 
 ### Notion Workspace Provisioning
 
-Automatic workspace setup.
-
-Creates:
+Automatically creates:
 
 * Notiva Tasks Database
 * Notiva Transactions Database
 
-inside the user's Notion workspace.
+inside the connected Notion workspace.
 
----
+### Background Synchronization
 
-### Background Sync Engine
+* Scheduled synchronization.
+* Retry support.
+* Failure tracking.
+* Sync status monitoring.
 
-Implemented backend synchronization pipeline.
+### Backend Services
 
-Features:
-
-* Scheduled sync processing
-* Retry support
-* Failure tracking
-* Sync status monitoring
-
----
-
-### Secure Token Management
-
-Implemented encrypted token storage.
-
-Features:
-
-* Token encryption at rest
-* Backend-only access
-* OAuth security protections
-
----
-
-### Backend Architecture
-
-Implemented production backend services.
-
-Stack:
+Built with:
 
 * Go
 * PostgreSQL
 * Supabase
-* REST APIs
 
-Features:
+Includes:
 
-* Authentication
+* Authentication APIs
 * Task APIs
 * Transaction APIs
-* Notion Integration APIs
-* Sync Infrastructure
-
----
+* Notion APIs
+* Synchronization infrastructure
 
 ### Mobile Application
 
-Implemented Flutter application.
-
-Stack:
+Built with:
 
 * Flutter
 * Dart
@@ -352,173 +308,132 @@ Features:
 * Cross-platform UI
 * Offline support
 * Responsive design
-* Quick capture experience
-
----
+* Universal Quick Capture
 
 ### Authentication
 
-Implemented secure authentication system.
-
-Features:
-
-* User accounts
-* Session management
-* Protected APIs
-
----
+* User accounts.
+* Session management.
+* Protected APIs.
 
 ### Sync Reliability
 
-Added synchronization safeguards.
+* Retry mechanisms.
+* Conflict prevention.
+* Error handling.
+* Sync status tracking.
 
-Features:
+## Changed
 
-* Retry mechanisms
-* Sync status tracking
-* Conflict prevention
-* Error handling
+None.
 
----
+## Improved
 
-## Security
+### Performance
 
-### Notion OAuth
-
-Implemented secure OAuth flow.
-
-Features:
-
-* OAuth state validation
-* Encrypted token storage
-* Backend-only token access
-
----
-
-### API Security
-
-Implemented:
-
-* Protected endpoints
-* User isolation
-* Authorization checks
-
----
-
-## Performance
-
-### Capture Flow
-
-Optimized capture speed.
-
-Flow:
-
-Capture
-→ Local Save
-→ Background Sync
-
-Result:
-
-Near-instant user experience.
-
----
+* Optimized capture workflow using a local-first architecture for near-instant data entry.
 
 ### Offline Experience
 
 Users can:
 
-* Create tasks
-* Create reminders
-* Add expenses
+* Create tasks.
+* Create reminders.
+* Record expenses.
 
-without internet connectivity.
+without an internet connection.
 
----
+## Fixed
 
-## 🛠 Developer Improvements
+None.
+
+## Security
+
+### Notion OAuth
+
+* OAuth state validation.
+* Encrypted token storage.
+* Backend-only token access.
+
+### API Security
+
+* Protected endpoints.
+* User data isolation.
+* Authorization enforcement.
+
+## Performance
+
+### Capture Flow
+
+Optimized workflow:
+
+```text
+Capture
+    ↓
+Local Save
+    ↓
+Background Sync
+```
+
+Provides near-instant user experience while synchronizing data in the background.
+
+## Developer
 
 ### Testing
 
-Added parser test suite.
-
-Coverage:
+Added parser test coverage for:
 
 * Intent detection
 * Amount extraction
 * Date parsing
 * Reminder parsing
 
----
-
 ### Code Quality
 
-Verified:
+* Resolved analyzer issues in capture modules.
+* Stabilized synchronization pipeline.
+* Production-ready architecture.
 
-* No analyzer issues in capture modules
-* Stable synchronization pipeline
-* Production-ready architecture
+### Technology Stack
 
----
+| Layer           | Technology                    |
+| --------------- | ----------------------------- |
+| Mobile          | Flutter, Dart                 |
+| Backend         | Go, PostgreSQL                |
+| Infrastructure  | Supabase, Notion API          |
+| Authentication  | JWT, OAuth 2.0                |
+| Synchronization | Background Workers, Cron Jobs |
 
-## Tech Stack
+## Deprecated
 
-### Mobile
+None.
 
-* Flutter
-* Dart
+## Removed
 
-### Backend
+None.
 
-* Go
-* PostgreSQL
+## Known Issues
 
-### Infrastructure
+None.
 
-* Supabase
-* Notion API
+## Upgrade Notes
 
-### Authentication
-
-* JWT
-* OAuth 2.0
-
-### Sync
-
-* Background Workers
-* Cron Jobs
+* Initial public release.
 
 ---
 
-## Core Features Available
+## Roadmap
 
-* Universal Quick Capture
-* Task Management
-* Expense Tracking
-* Budget Tracking
-* Budget Alerts
-* Notifications
-* Reminder Management
-* Offline First Support
-* Automatic Sync
-* Notion Backup
-* Notion OAuth
-* Transaction Filters
-* Dashboard Analytics
+Planned for future releases:
 
----
-
-## Planned
-
-### Future Releases
-
-* AI Powered Capture
-* Smart Categorization
-* Advanced Analytics
-* Recurring Transactions
-* Recurring Tasks
-* Android Widgets
-* Calendar Integration
-* Export Features
-* Team Workspaces
-* iOS Support
-* Play Store Release
+* AI-powered Quick Capture
+* Smart categorization
+* Advanced analytics
+* Recurring tasks
+* Recurring transactions
+* Android widgets
+* Calendar integration
+* Export features
+* Team workspaces
+* iOS support
+* Google Play Store release
