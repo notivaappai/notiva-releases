@@ -5,6 +5,132 @@ All notable changes to **Notiva** are documented in this file.
 The format is based on **Keep a Changelog**, and this project adheres to **Semantic Versioning (SemVer)**.
 
 ---
+# [1.1.0] - 2026-09-20
+
+## Summary
+
+Adds five resizable Android home screen widgets for quick visibility into tasks, reminders, finances, and upcoming activity. Also improves task category filtering, widget navigation and privacy, and fixes the onboarding navigation flow.
+
+## Highlights
+
+- Added **five resizable Android widgets**.
+- Added shared Flutter-to-Android widget data synchronization.
+- Added widget deep links for tasks, calendar, transactions, and Quick Capture.
+- Added privacy-aware financial amount masking.
+- Improved task category selection and filtering.
+- Fixed **Get Started → Sign Up → Sign In** navigation.
+- Added widget documentation and automated tests.
+
+## Added
+
+### Android Widgets
+
+Added five widgets:
+
+- **Quick Overview** — tasks, spending, budget, priorities, and up-next activity.
+- **Today's Focus** — priority-aware task list with up to 12 tasks.
+- **Your Money** — financial statistics, budget progress, and recent transactions.
+- **Quick Add** — shortcuts for creating reminders, transactions, and tasks.
+- **Upcoming** — upcoming tasks and transactions grouped by priority.
+
+All widgets support Android home screen resizing.
+
+### Widget Synchronization
+
+Added:
+
+- `WidgetDataBuilder` for generating a shared application snapshot.
+- `HomeWidgetSyncService` for debounced synchronization and widget refresh.
+- Native Flutter-to-Android method-channel communication.
+- Shared widget data storage using `SharedPreferences`.
+
+Widget snapshots support signed-in and signed-out states and never contain authentication tokens.
+
+### Widget Deep Links
+
+Widgets can open:
+
+- Tasks
+- Calendar
+- Transactions
+- Quick Capture
+
+### In-App Widget Components
+
+Added reusable neumorphic widget components under:
+
+```text
+lib/views/widgets/home_widgets/
+```
+
+## Changed
+
+### Task Categories
+
+- Added category suggestions and type-to-filter chips.
+- Improved category discovery and selection.
+- Normalized category labels through `task_list_filter.dart`.
+
+### Calendar
+
+- Calendar can scroll directly to upcoming content when opened from a widget.
+
+### Finance Privacy
+
+- Widget financial amounts now respect the **Show Amounts** preference.
+
+## Fixed
+
+### Onboarding Navigation
+
+Fixed an issue where **Onboarding → Sign Up → Sign In** could result in an empty black screen.
+
+The authentication navigation now preserves the root route:
+
+```text
+Onboarding
+    ↓
+Get Started
+    ↓
+Sign Up
+    ↓
+Sign In
+```
+
+## Security & Privacy
+
+- Authentication tokens are never stored in widget data.
+- Widget data contains only information required for rendering.
+- Financial amounts respect the user's visibility preference.
+- Signed-out widget state does not expose session credentials.
+
+## Performance
+
+- Debounced widget data writes.
+- Shared snapshot reduces duplicated processing.
+- Native refreshes are triggered through the Flutter-to-Android bridge.
+- Widgets render from persisted snapshot data.
+
+## Compatibility
+
+Existing Notiva functionality remains available, including:
+
+- Quick Capture
+- Task management
+- Expense and budget tracking
+- Reminders and notifications
+- Offline-first capture
+- Notion backup and synchronization
+- Authentication
+
+## Upgrade Notes
+
+- Existing users can update without recreating their account.
+- Android users can add widgets from the home screen widget picker.
+- Widget content synchronizes from the Notiva application.
+- Financial visibility follows the **Show Amounts** preference.
+
+---
 
 # [1.0.1] - 2026-06-04
 
