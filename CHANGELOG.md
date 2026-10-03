@@ -5,6 +5,92 @@ All notable changes to **Notiva** are documented in this file.
 The format is based on **Keep a Changelog**, and this project adheres to **Semantic Versioning (SemVer)**.
 
 ---
+
+# [1.1.1] - 2026-09-20
+
+## Summary
+
+Adds user-configurable transaction period settings (optional period start date and day-of-month anchor) so month/year/custom ranges follow a billing cycle instead of calendar month boundaries or fixed rolling windows. Wires the same settings through transactions, tasks, home widgets, and persisted finance settings.
+
+## Highlights
+
+- Added **transaction period configuration** with period start date & day-of-month anchor (e.g., 15th).
+- Replaced inline UI with shared `TransactionDateFilterBar` widget for period chips & custom range picking.
+- Syncs period settings across Transactions, Tasks, Home Widgets, and Finance Settings.
+- Added global notifiers (`transactionPeriodStartNotifier`, `transactionPeriodDayNotifier`) for real-time updates.
+- Android build now runs without `key.properties` (avoids CI failures).
+
+## Added
+
+### Transaction Date Logic
+
+- `periodStart` and `periodDay` fields in `TransactionDateFilter` (`rangeFor`, `apply`).
+- Billing-cycle math: starts from resolved anchor if only `periodDay` is set.
+- Year: from year-period anchor to today (no default Jan 1).
+- Today & week: unchanged.
+
+### Settings & Persistence
+
+- `FinanceSettingsModel`: `transaction_period_start`, `transaction_period_day` with parse/format helpers.
+- Finance settings sheet: pick period start, set day (1–31), clear anchor.
+- Global notifiers for real-time updates.
+
+### UI/UX
+
+- Shared `TransactionDateFilterBar` for period selection — replaces inline UI on Transactions.
+- Improved clarity and consistency in period filtering behavior.
+
+### Android Build
+
+- Release signing only applied when `key.properties` exists — avoids local/CI failures without keystore.
+
+### Tests
+
+- Updated `transaction_date_filter_test.dart` for billing-cycle and period-day behavior.
+
+## Changed
+
+- **Finance Settings** sheet: now supports setting period start + day-of-month.
+- **Home Widgets**: summary totals now reflect current period settings.
+- **Task List Filter**: forwards period params to `TransactionDateFilter`.
+- **Transaction UI**: period selection now via `TransactionDateFilterBar`, not inline.
+
+## Fixed
+
+- No known critical bugs in v1.1.1 — all functionality tested and validated.
+
+## Security & Privacy
+
+- No sensitive authentication tokens stored in widget data.
+- Financial amounts respect user’s visibility preference.
+- Widget data contains only necessary information for rendering.
+
+## Performance
+
+- Debounced updates to prevent UI lag.
+- Shared snapshot reduces duplicate processing.
+- Native refreshes via Flutter-to-Android bridge.
+- Faster UI syncs for period-based views.
+
+## Compatibility
+
+- All existing features remain available, including:
+  - Quick Capture
+  - Task management
+  - Expense & budget tracking
+  - Reminders & notifications
+  - Offline-first capture
+  - Notion backup & sync
+  - Authentication
+
+## Upgrade Notes
+
+- Existing users update seamlessly — no account recreation needed.
+- Android users can add widgets from home screen picker.
+- Financial visibility follows `Show Amounts` preference.
+- Period settings sync across app components.
+
+---
 # [1.1.0] - 2026-09-20
 
 ## Summary
